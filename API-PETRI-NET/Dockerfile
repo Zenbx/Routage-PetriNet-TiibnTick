@@ -6,7 +6,7 @@ COPY src ./src
 COPY .mvn ./.mvn
 COPY mvnw .
 COPY mvnw.cmd .
-RUN ./mvnw clean package -DskipTests
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
 # Run stage
 FROM eclipse-temurin:17-jre-alpine

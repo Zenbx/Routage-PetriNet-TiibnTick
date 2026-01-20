@@ -106,6 +106,10 @@ apiClient.interceptors.response.use(
       window.dispatchEvent(new CustomEvent('api-log-updated'));
     }
 
+    // Extract statusText and check if response is empty
+    const statusText = error.response?.statusText || 'Unknown Error';
+    const isEmpty = !respData || (typeof respData === 'object' && Object.keys(respData).length === 0);
+
     // For expected client errors (400/422/404) keep logs quieter and surface friendly messages
     if (status === 400 || status === 422 || status === 404) {
       console.warn(`⚠️ ${method} ${url} - ${status} ${statusText}`);
