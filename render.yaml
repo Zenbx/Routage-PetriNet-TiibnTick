@@ -4,7 +4,7 @@ services:
     name: route-service
     env: docker
     dockerContext: backend
-    dockerfilePath: Dockerfile
+    dockerfilePath: backend/Dockerfile
     plan: free
     envVars:
       - key: DB_HOST
@@ -33,7 +33,7 @@ services:
     name: petri-net-api
     env: docker
     dockerContext: API-PETRI-NET
-    dockerfilePath: Dockerfile
+    dockerfilePath: API-PETRI-NET/Dockerfile
     plan: free
     envVars:
       - key: DB_HOST
@@ -62,7 +62,7 @@ services:
     name: pickndrop-frontend
     env: docker
     dockerContext: frontend
-    dockerfilePath: Dockerfile
+    dockerfilePath: frontend/Dockerfile
     plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
