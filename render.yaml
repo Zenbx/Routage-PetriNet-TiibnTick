@@ -69,12 +69,11 @@ services:
         fromService:
           type: web
           name: route-service
-          property: url
+          property: hostport
 
 databases:
   - name: pickndrop-db
     databaseName: pickndrop_db
-    user: postgres
     plan: free
 
 # NOTE: Render Blueprint for Redis requires a paid plan or private service. 
