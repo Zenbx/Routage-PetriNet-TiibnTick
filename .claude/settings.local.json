@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw spring-boot:run:*)",
+      "Bash(mvn spring-boot:run:*)",
+      "Bash(npm run dev:*)",
+      "Bash(tee:*)",
+      "Bash(git restore:*)",
+      "Bash(cat:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(git checkout:*)",
+      "Bash(curl:*)",
+      "Bash(./mvnw:*)",
+      "Bash(timeout 5 ./mvnw:*)",
+      "Bash(Get-Process -Id 27432 -ErrorAction SilentlyContinue)",
+      "Bash(Get-Content \"C:\\\\Users\\\\USER\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\f--backend\\\\tasks\\\\bbc6d95.output\")",
+      "Bash(Select-Object -Last 50)",
+      "Bash(.mvnw.cmd clean:*)",
+      "Bash(npm run build:*)",
+      "Bash(java:*)",
+      "Bash(pkill:*)",
+      "Bash(Select-String -Path f:backendAPI-PETRI-NETbuild.log -Pattern \"\\\\[ERROR\\\\]\" -Context 3,3)",
+      "Bash(./mvnw.cmd clean:*)",
+      "Bash(timeout:*)",
+      "Bash(docker compose:*)",
+      "Bash(tasklist:*)",
+      "Bash(jps:*)"
+    ]
+  }
+}

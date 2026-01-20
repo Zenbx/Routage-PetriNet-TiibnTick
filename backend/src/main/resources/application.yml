@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: route-service
+  main:
+    allow-bean-definition-overriding: true
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pickndrop_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:jeff1234}
+    pool:
+      initial-size: 5
+      max-size: 20
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pickndrop_db}
+    user: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:jeff1234}
+    enabled: true
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+
+osrm:
+  api-url: http://router.project-osrm.org/route/v1/driving

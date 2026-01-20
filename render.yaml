@@ -1,0 +1,81 @@
+services:
+  # Route Service (Main Backend)
+  - type: web
+    name: route-service
+    env: docker
+    dockerContext: backend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: pickndrop-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pickndrop-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: pickndrop-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: pickndrop-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pickndrop-db
+          property: password
+
+  # Petri Net API
+  - type: web
+    name: petri-net-api
+    env: docker
+    dockerContext: API-PETRI-NET
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: pickndrop-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pickndrop-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: pickndrop-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: pickndrop-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pickndrop-db
+          property: password
+
+  # Frontend
+  - type: web
+    name: pickndrop-frontend
+    env: docker
+    dockerContext: frontend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: route-service
+          property: url
+
+databases:
+  - name: pickndrop-db
+    databaseName: pickndrop_db
+    user: postgres
+    plan: free
+
+# NOTE: Render Blueprint for Redis requires a paid plan or private service. 
+# You can add it manually if needed, but the backends currently use it as optional or via local cache defaults.
