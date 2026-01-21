@@ -69,7 +69,7 @@ services:
         fromService:
           type: web
           name: route-service
-          property: hostport
+          property: url
 
 databases:
   - name: pickndrop-db

@@ -29,25 +29,24 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<Map<String, Object>>> handleValidationException(
             WebExchangeBindException ex,
             ServerWebExchange exchange) {
-        
+
         log.error("Validation error: {}", ex.getMessage());
-        
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("path", exchange.getRequest().getPath().value());
         errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
         errorResponse.put("error", "Validation Failed");
-        
+
         Map<String, String> fieldErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
                         error -> error.getField(),
-                        error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value"
-                ));
-        
+                        error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value"));
+
         errorResponse.put("fieldErrors", fieldErrors);
-        
+
         return Mono.just(ResponseEntity.badRequest().body(errorResponse));
     }
 
@@ -58,21 +57,20 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<Map<String, Object>>> handleDataAccessException(
             DataAccessException ex,
             ServerWebExchange exchange) {
-        
-        log.error("Data access error: {}", ex.getMessage(), ex);
-        
+
+        log.error("CRITICAL: Database access error at {}: {}. Cause: {}",
+                exchange.getRequest().getPath().value(),
+                ex.getMessage(),
+                ex.getCause() != null ? ex.getCause().getMessage() : "Unknown",
+                ex);
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("path", exchange.getRequest().getPath().value());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("error", "Database Error");
-        errorResponse.put("message", "An error occurred while accessing the database");
-        
-        // En développement, ajouter plus de détails
-        if (log.isDebugEnabled()) {
-            errorResponse.put("details", ex.getMessage());
-        }
-        
+        errorResponse.put("message", "An error occurred while accessing the database. Details logged in backend.");
+
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
 
@@ -83,16 +81,16 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<Map<String, Object>>> handleIllegalArgumentException(
             IllegalArgumentException ex,
             ServerWebExchange exchange) {
-        
+
         log.error("Illegal argument error: {}", ex.getMessage(), ex);
-        
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("path", exchange.getRequest().getPath().value());
         errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
         errorResponse.put("error", "Invalid Argument");
         errorResponse.put("message", ex.getMessage());
-        
+
         return Mono.just(ResponseEntity.badRequest().body(errorResponse));
     }
 
@@ -103,16 +101,16 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<Map<String, Object>>> handleResourceNotFoundException(
             ResourceNotFoundException ex,
             ServerWebExchange exchange) {
-        
+
         log.warn("Resource not found: {}", ex.getMessage());
-        
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("path", exchange.getRequest().getPath().value());
         errorResponse.put("status", HttpStatus.NOT_FOUND.value());
         errorResponse.put("error", "Not Found");
         errorResponse.put("message", ex.getMessage());
-        
+
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse));
     }
 
@@ -161,22 +159,22 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<Map<String, Object>>> handleGenericException(
             Exception ex,
             ServerWebExchange exchange) {
-        
+
         log.error("Unexpected error: {}", ex.getMessage(), ex);
-        
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("path", exchange.getRequest().getPath().value());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("error", "Internal Server Error");
         errorResponse.put("message", "An unexpected error occurred");
-        
+
         // En développement, ajouter la stack trace
         if (log.isDebugEnabled()) {
             errorResponse.put("details", ex.getMessage());
             errorResponse.put("exception", ex.getClass().getName());
         }
-        
+
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
 }
