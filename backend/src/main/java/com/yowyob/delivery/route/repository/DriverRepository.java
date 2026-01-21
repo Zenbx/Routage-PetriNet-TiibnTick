@@ -13,5 +13,5 @@ import java.util.UUID;
  * Reactive repository for {@link DeliveryDriver} entities.
  */
 @Repository
-public interface DriverRepository extends R2dbcRepository<DeliveryDriver, UUID> {
+public interface DriverRepository extends R2dbcRepository<DeliveryDriver, UUID>, CustomDriverRepository {
 }

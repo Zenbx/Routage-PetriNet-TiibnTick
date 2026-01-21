@@ -23,7 +23,7 @@ public class DriverService {
      * @return a stream of all drivers
      */
     public Flux<DriverResponseDTO> getAllDrivers() {
-        return driverRepository.findAll()
+        return driverRepository.findAllWithLocation()
                 .map(driver -> DriverResponseDTO.builder()
                         .id(driver.getId())
                         .name(driver.getFirstName() + " " + driver.getLastName())

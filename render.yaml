@@ -70,6 +70,12 @@ services:
           type: web
           name: route-service
           property: url
+    dockerBuildArgs:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: route-service
+          property: url
 
 databases:
   - name: pickndrop-db
