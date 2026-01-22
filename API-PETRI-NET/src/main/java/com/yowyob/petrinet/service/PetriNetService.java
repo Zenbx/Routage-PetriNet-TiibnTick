@@ -55,6 +55,7 @@ public class PetriNetService {
                 .id(id)
                 .name(netDto.name != null ? netDto.name : "Net-" + idStr)
                 .currentTime(0L)
+                .isNew(true)
                 .build();
 
         // First, save the net entity
