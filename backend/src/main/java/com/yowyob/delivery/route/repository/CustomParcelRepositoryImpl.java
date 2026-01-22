@@ -229,7 +229,7 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
     }
 
     @Override
-    public Mono<Integer> updatePetriNetId(UUID parcelId, String petriNetId) {
+    public Mono<Long> updatePetriNetId(UUID parcelId, String petriNetId) {
         String sql = "UPDATE parcels SET petri_net_id = :petriNetId, updated_at = NOW() WHERE id = :parcelId";
         return databaseClient.sql(sql)
                 .bind("parcelId", parcelId)

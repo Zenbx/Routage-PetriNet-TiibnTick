@@ -33,5 +33,5 @@ public interface CustomParcelRepository {
      * Update only the Petri Net ID of a parcel.
      * Used to avoid conversion issues with other fields during creation flow.
      */
-    Mono<Integer> updatePetriNetId(UUID parcelId, String petriNetId);
+    Mono<Long> updatePetriNetId(UUID parcelId, String petriNetId);
 }
