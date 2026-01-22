@@ -409,7 +409,7 @@ export const LogisticsService = {
 // PETRI NET SERVICE (Préparation - Currently disabled)
 // ============================================================================
 
-const PETRI_API_BASE_URL = 'http://localhost:8081/api/nets';
+const PETRI_API_BASE_URL = process.env.NEXT_PUBLIC_PETRI_API_URL || 'http://localhost:8081/api/nets';
 
 export const PetriNetService = {
   isEnabled: true,

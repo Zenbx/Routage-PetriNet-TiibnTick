@@ -75,11 +75,21 @@ services:
           type: web
           name: route-service
           property: url
+      - key: NEXT_PUBLIC_PETRI_API_URL
+        fromService:
+          type: web
+          name: petri-net-api
+          property: url
     dockerBuildArgs:
       - key: NEXT_PUBLIC_API_URL
         fromService:
           type: web
           name: route-service
+          property: url
+      - key: NEXT_PUBLIC_PETRI_API_URL
+        fromService:
+          type: web
+          name: petri-net-api
           property: url
 
 databases:
