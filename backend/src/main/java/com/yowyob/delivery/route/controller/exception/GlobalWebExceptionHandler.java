@@ -41,15 +41,9 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
         String message = "An unexpected error occurred";
 
         if (ex instanceof ResponseStatusException rse) {
-            // ResponseStatusException#getStatusCode() returns HttpStatusCode in newer Spring
-            // Convert to HttpStatus safely
-            try {
-                int code = rse.getStatusCode().value();
-                HttpStatus resolved = HttpStatus.resolve(code);
-                status = resolved != null ? resolved : HttpStatus.INTERNAL_SERVER_ERROR;
-            } catch (Exception ignore) {
+            status = HttpStatus.resolve(rse.getStatusCode().value());
+            if (status == null)
                 status = HttpStatus.INTERNAL_SERVER_ERROR;
-            }
             message = rse.getReason() != null ? rse.getReason() : rse.getMessage();
         } else if (ex instanceof NoPathFoundException npf) {
             status = HttpStatus.UNPROCESSABLE_ENTITY;
@@ -57,9 +51,14 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
         } else if (ex instanceof IllegalArgumentException iae) {
             status = HttpStatus.BAD_REQUEST;
             message = iae.getMessage();
+        } else {
+            // Log full stack trace for truly unexpected errors
+            log.error("CRITICAL: Unexpected error at {}: {}", exchange.getRequest().getPath().value(), ex.getMessage(),
+                    ex);
         }
 
-        log.warn("GlobalWebExceptionHandler handling error: {} {} -> {}", exchange.getRequest().getPath().value(), status, ex.getMessage());
+        log.warn("GlobalWebExceptionHandler handling error: {} {} -> {}", exchange.getRequest().getPath().value(),
+                status, ex.getMessage());
 
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
@@ -67,6 +66,7 @@ public class GlobalWebExceptionHandler implements WebExceptionHandler {
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         body.put("message", message != null ? message : ex.getMessage());
+        body.put("exception", ex.getClass().getSimpleName());
 
         byte[] bytes;
         try {

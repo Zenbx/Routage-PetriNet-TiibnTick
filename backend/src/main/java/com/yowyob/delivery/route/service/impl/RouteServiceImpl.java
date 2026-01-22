@@ -44,8 +44,8 @@ public class RouteServiceImpl implements RouteService {
         @Override
         public Mono<RouteResponseDTO> calculateRoute(RouteCalculationRequestDTO request) {
                 return Mono.zip(
-                                hubRepository.findById(request.getStartHubId()),
-                                hubRepository.findById(request.getEndHubId())).flatMap(tuple -> {
+                                hubRepository.findByIdWithLocation(request.getStartHubId()),
+                                hubRepository.findByIdWithLocation(request.getEndHubId())).flatMap(tuple -> {
                                         Hub start = tuple.getT1();
                                         Hub end = tuple.getT2();
 
@@ -87,7 +87,8 @@ public class RouteServiceImpl implements RouteService {
                                         RoutingConstraintsDTO constraints = new RoutingConstraintsDTO();
 
                                         if (algorithm != null && !algorithm.isEmpty()) {
-                                                // Extract base algorithm name (e.g., "OSRM" from "OSRM" or "BASIC_DETOUR")
+                                                // Extract base algorithm name (e.g., "OSRM" from "OSRM" or
+                                                // "BASIC_DETOUR")
                                                 String baseAlgo = algorithm.split("_")[0];
                                                 constraints.setAlgorithm(baseAlgo);
                                         }

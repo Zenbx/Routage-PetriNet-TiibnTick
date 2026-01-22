@@ -30,3 +30,7 @@ springdoc:
 
 osrm:
   api-url: http://router.project-osrm.org/route/v1/driving
+
+app:
+  petri-net:
+    url: ${PETRI_NET_API_URL:http://localhost:8081}

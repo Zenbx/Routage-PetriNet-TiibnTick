@@ -27,6 +27,11 @@ services:
         fromDatabase:
           name: pickndrop-db
           property: password
+      - key: PETRI_NET_API_URL
+        fromService:
+          type: web
+          name: petri-net-api
+          property: url
 
   # Petri Net API
   - type: web

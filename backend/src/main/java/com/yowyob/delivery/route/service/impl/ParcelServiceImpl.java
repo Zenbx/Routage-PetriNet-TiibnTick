@@ -121,7 +121,7 @@ public class ParcelServiceImpl implements ParcelService {
      */
     @Override
     public Mono<ParcelResponseDTO> getParcel(UUID id) {
-        return parcelRepository.findById(id)
+        return parcelRepository.findByIdWithLocations(id)
                 .map(parcelMapper::toResponseDTO);
     }
 
@@ -131,7 +131,7 @@ public class ParcelServiceImpl implements ParcelService {
      */
     @Override
     public Flux<ParcelResponseDTO> getAllParcels() {
-        return parcelRepository.findAll()
+        return parcelRepository.findAllWithLocations()
                 .map(parcelMapper::toResponseDTO);
     }
 }

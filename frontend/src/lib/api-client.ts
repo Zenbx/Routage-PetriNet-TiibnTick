@@ -7,7 +7,10 @@ import axios, { AxiosError } from 'axios';
 import { toast } from 'react-hot-toast';
 import { PetriNetState } from './type';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = rawApiUrl.endsWith('/api/v1')
+  ? rawApiUrl
+  : `${rawApiUrl.replace(/\/$/, '')}/api/v1`;
 
 export interface ApiLogEntry {
   id: string;
