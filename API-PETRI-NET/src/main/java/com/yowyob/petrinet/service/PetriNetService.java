@@ -57,36 +57,41 @@ public class PetriNetService {
                 .currentTime(0L)
                 .build();
 
-        Mono<Void> savePlaces = Flux.fromIterable(netDto.places != null ? netDto.places : Collections.emptyList())
-                .flatMap(pId -> placeRepository
-                        .save(PlaceEntity.builder().netId(id).placeId(pId).name(pId).build()))
-                .then();
-
-        Mono<Void> saveTransitions = Flux.fromIterable(netDto.transitions != null ? netDto.transitions : Collections.emptyList())
-                .flatMap(tDto -> transitionRepository.save(TransitionEntity.builder()
-                        .netId(id)
-                        .transitionId(tDto.id)
-                        .name(tDto.name)
-                        .minFiringDelay(tDto.minFiringDelay)
-                        .maxFiringDelay(tDto.maxFiringDelay)
-                        .build()))
-                .then();
-
-        Mono<Void> saveArcs = Flux.fromIterable(netDto.arcs != null ? netDto.arcs : Collections.emptyList())
-                .flatMap(aDto -> arcRepository.save(ArcEntity.builder()
-                        .netId(id)
-                        .placeId(aDto.placeId)
-                        .transitionId(aDto.transitionId)
-                        .type(aDto.type)
-                        .weight(1)
-                        .build()))
-                .then();
-
+        // First, save the net entity
         return petriNetRepository.save(netEntity)
-                .then(savePlaces)
-                .then(saveTransitions)
-                .then(saveArcs)
-                .thenReturn(idStr);
+                .flatMap(savedNet -> {
+                    // Once the net is saved, save all related entities in parallel
+                    Mono<Void> savePlaces = Flux
+                            .fromIterable(netDto.places != null ? netDto.places : Collections.emptyList())
+                            .flatMap(pId -> placeRepository
+                                    .save(PlaceEntity.builder().netId(id).placeId(pId).name(pId).build()))
+                            .then();
+
+                    Mono<Void> saveTransitions = Flux
+                            .fromIterable(netDto.transitions != null ? netDto.transitions : Collections.emptyList())
+                            .flatMap(tDto -> transitionRepository.save(TransitionEntity.builder()
+                                    .netId(id)
+                                    .transitionId(tDto.id)
+                                    .name(tDto.name)
+                                    .minFiringDelay(tDto.minFiringDelay)
+                                    .maxFiringDelay(tDto.maxFiringDelay)
+                                    .build()))
+                            .then();
+
+                    Mono<Void> saveArcs = Flux.fromIterable(netDto.arcs != null ? netDto.arcs : Collections.emptyList())
+                            .flatMap(aDto -> arcRepository.save(ArcEntity.builder()
+                                    .netId(id)
+                                    .placeId(aDto.placeId)
+                                    .transitionId(aDto.transitionId)
+                                    .type(aDto.type)
+                                    .weight(1)
+                                    .build()))
+                            .then();
+
+                    // Wait for all related entities to be saved
+                    return Mono.when(savePlaces, saveTransitions, saveArcs)
+                            .thenReturn(idStr);
+                });
     }
 
     public Mono<NetStateDTO> getNetState(String id) {
