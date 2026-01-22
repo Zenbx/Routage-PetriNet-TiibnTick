@@ -23,6 +23,11 @@ public class PetriNetController {
         this.petriNetService = petriNetService;
     }
 
+    @GetMapping("/health")
+    public Mono<String> health() {
+        return Mono.just("UP");
+    }
+
     @PostMapping
     public Mono<String> createNet(@RequestBody NetDTO netDto) {
         return petriNetService.createNet(netDto);
