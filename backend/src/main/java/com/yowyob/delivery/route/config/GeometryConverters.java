@@ -15,8 +15,7 @@ import org.springframework.lang.NonNull;
  */
 public class GeometryConverters {
 
-    private static final GeometryFactory geometryFactory = 
-        new GeometryFactory(new PrecisionModel(), 4326);
+    private static final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
     /**
      * Convertit un Point JTS (org.locationtech.jts.geom.Point) en String WKT
@@ -28,44 +27,6 @@ public class GeometryConverters {
         public String convert(@NonNull Point source) {
             // Format WKT: POINT(longitude latitude)
             return String.format("POINT(%s %s)", source.getX(), source.getY());
-        }
-    }
-
-    /**
-     * Convertit un String WKT en Point JTS
-     * Utilisé quand Spring Data R2DBC écrit les données vers PostgreSQL/PostGIS
-     */
-    @WritingConverter
-    public static class StringToJtsPointConverter implements Converter<String, Point> {
-        @Override
-        public Point convert(@NonNull String source) {
-            if (source == null || source.trim().isEmpty()) {
-                return null;
-            }
-            
-            try {
-                // Extraire les coordonnées de "POINT(longitude latitude)"
-                String coords = source.replace("POINT(", "")
-                                     .replace(")", "")
-                                     .trim();
-                String[] parts = coords.split("\\s+");
-                
-                if (parts.length != 2) {
-                    throw new IllegalArgumentException("Invalid WKT Point format: " + source);
-                }
-                
-                double x = Double.parseDouble(parts[0]); // longitude
-                double y = Double.parseDouble(parts[1]); // latitude
-                
-                // Créer un Point JTS avec SRID 4326 (WGS 84)
-                Coordinate coordinate = new Coordinate(x, y);
-                Point point = geometryFactory.createPoint(coordinate);
-                point.setSRID(4326);
-                
-                return point;
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Failed to parse WKT Point: " + source, e);
-            }
         }
     }
 }

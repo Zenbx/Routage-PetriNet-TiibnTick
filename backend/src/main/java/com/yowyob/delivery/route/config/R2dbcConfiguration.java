@@ -18,19 +18,16 @@ public class R2dbcConfiguration {
         return R2dbcCustomConversions.of(
                 PostgresDialect.INSTANCE,
                 Arrays.asList(
-                    // Converters pour les enums
-                    new EnumConverters.ParcelStateToStringConverter(),
-                    new EnumConverters.StringToParcelStateConverter(),
-                    new EnumConverters.ParcelPriorityToStringConverter(),
-                    new EnumConverters.StringToParcelPriorityConverter(),
-                    new EnumConverters.DriverStateToStringConverter(),
-                    new EnumConverters.StringToDriverStateConverter(),
-                    // Converters pour les géométries
-                    new GeometryConverters.JtsPointToStringConverter(),
-                    new GeometryConverters.StringToJtsPointConverter(),
-                    new LineStringToStringConverter()
-                )
-        );
+                        // Converters pour les enums
+                        new EnumConverters.ParcelStateToStringConverter(),
+                        new EnumConverters.StringToParcelStateConverter(),
+                        new EnumConverters.ParcelPriorityToStringConverter(),
+                        new EnumConverters.StringToParcelPriorityConverter(),
+                        new EnumConverters.DriverStateToStringConverter(),
+                        new EnumConverters.StringToDriverStateConverter(),
+                        // Converters pour les géométries
+                        new GeometryConverters.JtsPointToStringConverter(),
+                        new LineStringToStringConverter()));
     }
 
     @ReadingConverter

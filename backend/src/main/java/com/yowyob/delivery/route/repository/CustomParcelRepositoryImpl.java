@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.Optional;
 
-
 /**
  * Custom implementation for Parcel repository methods that require
  * manual row mapping, particularly for PostGIS geometry functions.
@@ -30,33 +29,33 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
     @Override
     public Flux<Parcel> findAllWithLocations() {
         String sql = """
-            SELECT 
-                id, 
-                tracking_code,
-                driver_id,
-                vehicle_id,
-                current_state,
-                priority,
-                sender_name,
-                sender_phone,
-                recipient_name,
-                recipient_phone,
-                ST_AsText(pickup_location) as pickup_location,
-                pickup_address,
-                ST_AsText(delivery_location) as delivery_location,
-                delivery_address,
-                weight_kg,
-                declared_value_xaf,
-                distance_km,
-                delivery_fee_xaf,
-                estimated_delivery_time,
-                notes,
-                created_at,
-                updated_at
-            FROM parcels
-            ORDER BY created_at DESC
-            """;
-        
+                SELECT
+                    id,
+                    tracking_code,
+                    driver_id,
+                    vehicle_id,
+                    current_state,
+                    priority,
+                    sender_name,
+                    sender_phone,
+                    recipient_name,
+                    recipient_phone,
+                    ST_AsText(pickup_location) as pickup_location,
+                    pickup_address,
+                    ST_AsText(delivery_location) as delivery_location,
+                    delivery_address,
+                    weight_kg,
+                    declared_value_xaf,
+                    distance_km,
+                    delivery_fee_xaf,
+                    estimated_delivery_time,
+                    notes,
+                    created_at,
+                    updated_at
+                FROM parcels
+                ORDER BY created_at DESC
+                """;
+
         return databaseClient.sql(sql)
                 .map(this::mapRowToParcel)
                 .all()
@@ -67,33 +66,33 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
     @Override
     public Mono<Parcel> findByIdWithLocations(UUID id) {
         String sql = """
-            SELECT 
-                id, 
-                tracking_code,
-                driver_id,
-                vehicle_id,
-                current_state,
-                priority,
-                sender_name,
-                sender_phone,
-                recipient_name,
-                recipient_phone,
-                ST_AsText(pickup_location) as pickup_location,
-                pickup_address,
-                ST_AsText(delivery_location) as delivery_location,
-                delivery_address,
-                weight_kg,
-                declared_value_xaf,
-                distance_km,
-                delivery_fee_xaf,
-                estimated_delivery_time,
-                notes,
-                created_at,
-                updated_at
-            FROM parcels 
-            WHERE id = :id
-            """;
-        
+                SELECT
+                    id,
+                    tracking_code,
+                    driver_id,
+                    vehicle_id,
+                    current_state,
+                    priority,
+                    sender_name,
+                    sender_phone,
+                    recipient_name,
+                    recipient_phone,
+                    ST_AsText(pickup_location) as pickup_location,
+                    pickup_address,
+                    ST_AsText(delivery_location) as delivery_location,
+                    delivery_address,
+                    weight_kg,
+                    declared_value_xaf,
+                    distance_km,
+                    delivery_fee_xaf,
+                    estimated_delivery_time,
+                    notes,
+                    created_at,
+                    updated_at
+                FROM parcels
+                WHERE id = :id
+                """;
+
         return databaseClient.sql(sql)
                 .bind("id", id)
                 .map(this::mapRowToParcel)
@@ -107,38 +106,38 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
         if (parcel.getId() == null) {
             // INSERT
             String sql = """
-                INSERT INTO parcels (
-                    id, tracking_code, driver_id, vehicle_id, current_state, priority,
-                    sender_name, sender_phone, recipient_name, recipient_phone,
-                    pickup_location, pickup_address, delivery_location, delivery_address,
-                    weight_kg, declared_value_xaf, distance_km, delivery_fee_xaf,
-                    estimated_delivery_time, notes, created_at, updated_at
-                )
-                VALUES (
-                    :id, :tracking_code, :driver_id, :vehicle_id, :current_state::parcel_state, :priority::parcel_priority,
-                    :sender_name, :sender_phone, :recipient_name, :recipient_phone,
-                    ST_GeomFromText(:pickup_location, 4326), :pickup_address,
-                    ST_GeomFromText(:delivery_location, 4326), :delivery_address,
-                    :weight_kg, :declared_value_xaf, :distance_km, :delivery_fee_xaf,
-                    :estimated_delivery_time, :notes, NOW(), NOW()
-                )
-                RETURNING id, tracking_code, driver_id, vehicle_id, current_state, priority,
-                    sender_name, sender_phone, recipient_name, recipient_phone,
-                    ST_AsText(pickup_location) as pickup_location, pickup_address,
-                    ST_AsText(delivery_location) as delivery_location, delivery_address,
-                    weight_kg, declared_value_xaf, distance_km, delivery_fee_xaf,
-                    estimated_delivery_time, notes, created_at, updated_at
-                """;
-            
+                    INSERT INTO parcels (
+                        id, tracking_code, driver_id, vehicle_id, current_state, priority,
+                        sender_name, sender_phone, recipient_name, recipient_phone,
+                        pickup_location, pickup_address, delivery_location, delivery_address,
+                        weight_kg, declared_value_xaf, distance_km, delivery_fee_xaf,
+                        estimated_delivery_time, notes, created_at, updated_at
+                    )
+                    VALUES (
+                        :id, :tracking_code, :driver_id, :vehicle_id, :current_state::parcel_state, :priority::parcel_priority,
+                        :sender_name, :sender_phone, :recipient_name, :recipient_phone,
+                        ST_GeomFromText(:pickup_location, 4326), :pickup_address,
+                        ST_GeomFromText(:delivery_location, 4326), :delivery_address,
+                        :weight_kg, :declared_value_xaf, :distance_km, :delivery_fee_xaf,
+                        :estimated_delivery_time, :notes, NOW(), NOW()
+                    )
+                    RETURNING id, tracking_code, driver_id, vehicle_id, current_state, priority,
+                        sender_name, sender_phone, recipient_name, recipient_phone,
+                        ST_AsText(pickup_location) as pickup_location, pickup_address,
+                        ST_AsText(delivery_location) as delivery_location, delivery_address,
+                        weight_kg, declared_value_xaf, distance_km, delivery_fee_xaf,
+                        estimated_delivery_time, notes, created_at, updated_at
+                    """;
+
             UUID newId = UUID.randomUUID();
-            
+
             DatabaseClient.GenericExecuteSpec spec = databaseClient.sql(sql)
                     .bind("id", newId)
                     .bind("tracking_code", parcel.getTrackingCode());
-            
+
             spec = bindNullable(spec, "driver_id", parcel.getDriverId(), UUID.class);
             spec = bindNullable(spec, "vehicle_id", parcel.getVehicleId(), UUID.class);
-            
+
             spec = spec.bind("current_state", parcel.getCurrentState().name())
                     .bind("priority", parcel.getPriority().name())
                     .bind("sender_name", parcel.getSenderName())
@@ -155,7 +154,8 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
             spec = bindNullable(spec, "declared_value_xaf", parcel.getDeclaredValueXaf(), Double.class);
             spec = bindNullable(spec, "distance_km", parcel.getDistanceKm(), Double.class);
             spec = bindNullable(spec, "delivery_fee_xaf", parcel.getDeliveryFeeXaf(), Double.class);
-            spec = bindNullable(spec, "estimated_delivery_time", parcel.getEstimatedDeliveryTime(), LocalDateTime.class);
+            spec = bindNullable(spec, "estimated_delivery_time", parcel.getEstimatedDeliveryTime(),
+                    LocalDateTime.class);
             spec = bindNullable(spec, "notes", parcel.getNotes(), String.class);
 
             return spec.map(this::mapRowToParcel)
@@ -165,36 +165,36 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
         } else {
             // UPDATE
             String sql = """
-                UPDATE parcels 
-                SET tracking_code = :tracking_code,
-                    driver_id = :driver_id,
-                    vehicle_id = :vehicle_id,
-                    current_state = :current_state::parcel_state,
-                    priority = :priority::parcel_priority,
-                    sender_name = :sender_name,
-                    sender_phone = :sender_phone,
-                    recipient_name = :recipient_name,
-                    recipient_phone = :recipient_phone,
-                    pickup_location = ST_GeomFromText(:pickup_location, 4326),
-                    pickup_address = :pickup_address,
-                    delivery_location = ST_GeomFromText(:delivery_location, 4326),
-                    delivery_address = :delivery_address,
-                    weight_kg = :weight_kg,
-                    declared_value_xaf = :declared_value_xaf,
-                    distance_km = :distance_km,
-                    delivery_fee_xaf = :delivery_fee_xaf,
-                    estimated_delivery_time = :estimated_delivery_time,
-                    notes = :notes,
-                    updated_at = NOW()
-                WHERE id = :id
-                RETURNING id, tracking_code, driver_id, vehicle_id, current_state, priority,
-                    sender_name, sender_phone, recipient_name, recipient_phone,
-                    ST_AsText(pickup_location) as pickup_location, pickup_address,
-                    ST_AsText(delivery_location) as delivery_location, delivery_address,
-                    weight_kg, declared_value_xaf, distance_km, delivery_fee_xaf,
-                    estimated_delivery_time, notes, created_at, updated_at
-                """;
-            
+                    UPDATE parcels
+                    SET tracking_code = :tracking_code,
+                        driver_id = :driver_id,
+                        vehicle_id = :vehicle_id,
+                        current_state = :current_state::parcel_state,
+                        priority = :priority::parcel_priority,
+                        sender_name = :sender_name,
+                        sender_phone = :sender_phone,
+                        recipient_name = :recipient_name,
+                        recipient_phone = :recipient_phone,
+                        pickup_location = ST_GeomFromText(:pickup_location, 4326),
+                        pickup_address = :pickup_address,
+                        delivery_location = ST_GeomFromText(:delivery_location, 4326),
+                        delivery_address = :delivery_address,
+                        weight_kg = :weight_kg,
+                        declared_value_xaf = :declared_value_xaf,
+                        distance_km = :distance_km,
+                        delivery_fee_xaf = :delivery_fee_xaf,
+                        estimated_delivery_time = :estimated_delivery_time,
+                        notes = :notes,
+                        updated_at = NOW()
+                    WHERE id = :id
+                    RETURNING id, tracking_code, driver_id, vehicle_id, current_state, priority,
+                        sender_name, sender_phone, recipient_name, recipient_phone,
+                        ST_AsText(pickup_location) as pickup_location, pickup_address,
+                        ST_AsText(delivery_location) as delivery_location, delivery_address,
+                        weight_kg, declared_value_xaf, distance_km, delivery_fee_xaf,
+                        estimated_delivery_time, notes, created_at, updated_at
+                    """;
+
             DatabaseClient.GenericExecuteSpec spec = databaseClient.sql(sql)
                     .bind("id", parcel.getId())
                     .bind("tracking_code", parcel.getTrackingCode());
@@ -217,14 +217,25 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
             spec = bindNullable(spec, "declared_value_xaf", parcel.getDeclaredValueXaf(), Double.class);
             spec = bindNullable(spec, "distance_km", parcel.getDistanceKm(), Double.class);
             spec = bindNullable(spec, "delivery_fee_xaf", parcel.getDeliveryFeeXaf(), Double.class);
-            spec = bindNullable(spec, "estimated_delivery_time", parcel.getEstimatedDeliveryTime(), LocalDateTime.class);
+            spec = bindNullable(spec, "estimated_delivery_time", parcel.getEstimatedDeliveryTime(),
+                    LocalDateTime.class);
             spec = bindNullable(spec, "notes", parcel.getNotes(), String.class);
-            
+
             return spec.map(this::mapRowToParcel)
                     .one()
                     .doOnSuccess(saved -> log.info("Parcel updated with ID: {}", saved.getId()))
                     .doOnError(e -> log.error("Error updating parcel {}", parcel.getId(), e));
         }
+    }
+
+    @Override
+    public Mono<Integer> updatePetriNetId(UUID parcelId, String petriNetId) {
+        String sql = "UPDATE parcels SET petri_net_id = :petriNetId, updated_at = NOW() WHERE id = :parcelId";
+        return databaseClient.sql(sql)
+                .bind("parcelId", parcelId)
+                .bind("petriNetId", petriNetId)
+                .fetch()
+                .rowsUpdated();
     }
 
     /**
@@ -255,7 +266,7 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
                 log.warn("Unknown ParcelState '{}', defaulting to PLANNED", stateString);
                 state = ParcelState.PLANNED;
             }
-            
+
             String priorityString = row.get("priority", String.class);
             ParcelPriority priority;
             try {
@@ -264,7 +275,7 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
                 log.warn("Unknown ParcelPriority '{}', defaulting to NORMAL", priorityString);
                 priority = ParcelPriority.NORMAL;
             }
-            
+
             return Parcel.builder()
                     .id(row.get("id", UUID.class))
                     .trackingCode(row.get("tracking_code", String.class))
@@ -283,24 +294,20 @@ public class CustomParcelRepositoryImpl implements CustomParcelRepository {
                     .weightKg(
                             Optional.ofNullable(row.get("weight_kg", BigDecimal.class))
                                     .map(BigDecimal::doubleValue)
-                                    .orElse(null)
-                        )
+                                    .orElse(null))
                     .distanceKm(
                             Optional.ofNullable(row.get("distance_km", BigDecimal.class))
                                     .map(BigDecimal::doubleValue)
-                                    .orElse(null)
-                        )
+                                    .orElse(null))
 
-                   .declaredValueXaf(
-                        Optional.ofNullable(row.get("declared_value_xaf", BigDecimal.class))
-                                .map(BigDecimal::doubleValue)
-                                .orElse(null)
-                    )
+                    .declaredValueXaf(
+                            Optional.ofNullable(row.get("declared_value_xaf", BigDecimal.class))
+                                    .map(BigDecimal::doubleValue)
+                                    .orElse(null))
                     .deliveryFeeXaf(
-                        Optional.ofNullable(row.get("delivery_fee_xaf", BigDecimal.class))
-                                .map(BigDecimal::doubleValue)
-                                .orElse(null)
-                    )
+                            Optional.ofNullable(row.get("delivery_fee_xaf", BigDecimal.class))
+                                    .map(BigDecimal::doubleValue)
+                                    .orElse(null))
                     .estimatedDeliveryTime(row.get("estimated_delivery_time", LocalDateTime.class))
                     .notes(row.get("notes", String.class))
                     .createdAt(row.get("created_at", LocalDateTime.class))

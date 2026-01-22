@@ -65,10 +65,9 @@ public class ParcelServiceImpl implements ParcelService {
 
                     return parcelRepository.saveWithGeometry(parcel)
                             .flatMap(savedParcel -> petriNetClient.initializeParcelNet(savedParcel.getId())
-                                    .flatMap(netId -> {
-                                        savedParcel.setPetriNetId(netId);
-                                        return parcelRepository.save(savedParcel); // Update with netId
-                                    })
+                                    .flatMap(netId -> parcelRepository.updatePetriNetId(savedParcel.getId(), netId)
+                                            .thenReturn(netId)
+                                            .doOnNext(savedParcel::setPetriNetId))
                                     .thenReturn(savedParcel)
                                     .map(parcelMapper::toResponseDTO));
                 });
