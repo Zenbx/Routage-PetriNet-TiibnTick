@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -150,6 +151,26 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", ex.getMessage());
 
         return Mono.just(ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse));
+    }
+
+    /**
+     * Gère les erreurs de statut HTTP spécifiques (ex: 404 Not Found de Spring)
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public Mono<ResponseEntity<Map<String, Object>>> handleResponseStatusException(
+            ResponseStatusException ex,
+            ServerWebExchange exchange) {
+
+        log.warn("Response status error at {}: {}", exchange.getRequest().getPath().value(), ex.getMessage());
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("path", exchange.getRequest().getPath().value());
+        errorResponse.put("status", ex.getStatusCode().value());
+        errorResponse.put("error", ex.getReason() != null ? ex.getReason() : "HTTP Error");
+        errorResponse.put("message", ex.getReason());
+
+        return Mono.just(ResponseEntity.status(ex.getStatusCode()).body(errorResponse));
     }
 
     /**
